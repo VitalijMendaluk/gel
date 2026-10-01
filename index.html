@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEL Converter</title>
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f7; padding:30px; }
+.card { max-width:360px; margin:auto; background:white; padding:24px; border-radius:20px; box-shadow:0 5px 20px #0002; }
+input { width:100%; font-size:28px; padding:12px; border-radius:12px; border:1px solid #ccc; box-sizing:border-box; }
+.result { margin-top:20px; font-size:20px; line-height:1.8; }
+small { color:#666; }
+</style>
+</head>
+<body>
+<div class="card">
+<h2>🇬🇪 GEL конвертер</h2>
+<input id="gel" type="number" placeholder="Сума GEL" oninput="convert()">
+<div class="result" id="out">Введіть суму</div>
+<small>Курси оновлюються при відкритті сторінки</small>
+</div>
+
+<script>
+async function convert(){
+  let amount = Number(document.getElementById('gel').value);
+  if(!amount){ document.getElementById('out').innerHTML='Введіть суму'; return; }
+  try{
+    let r = await fetch('https://open.er-api.com/v6/latest/GEL');
+    let d = await r.json();
+    let uah = (amount*d.rates.UAH).toFixed(0);
+    let pln = (amount*d.rates.PLN).toFixed(0);
+    let usd = (amount*d.rates.USD).toFixed(2);
+    document.getElementById('out').innerHTML =
+      `🇺🇦 ${uah} грн<br>🇵🇱 ${pln} zł<br>🇺🇸 ${usd} $`;
+  }catch(e){
+    document.getElementById('out').innerHTML='Помилка завантаження курсу';
+  }
+}
+</script>
+</body>
+</html>
